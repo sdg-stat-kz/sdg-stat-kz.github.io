@@ -1,1 +1,0 @@
-# sdg-stat-kz.github.io
