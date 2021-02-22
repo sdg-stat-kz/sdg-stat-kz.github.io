@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
-        <script crossorigin="anonymous" src="https://polyfill.io/v3/polyfill.min.js?features=Promise%2CArray.prototype.forEach%2CString.prototype.includes%2CURLSearchParams%2CCustomEvent%2CArray.prototype.includes%2CArray.prototype.filter%2CArray.prototype.some%2CArray.prototype.find%2CArray.prototype.reduce%2CObject.assign%2CArray.isArray%2CObject.values%2CArray.from%2CSet"></script>
+        <script crossorigin="anonymous" src="https://polyfill.io/v3/polyfill.min.js?features=Promise%2CArray.prototype.forEach%2CString.prototype.includes%2CURLSearchParams%2CCustomEvent%2CArray.prototype.includes%2CArray.prototype.filter%2CArray.prototype.some%2CArray.prototype.find%2CArray.prototype.reduce%2CObject.assign%2CArray.isArray%2CObject.values%2CArray.from%2CSet%2CArray.prototype.findIndex"></script>
 <script crossorigin="anonymous" src="https://cdnjs.cloudflare.com/ajax/libs/javascript-canvas-to-blob/3.15.0/js/canvas-to-blob.min.js"></script>
 
         <script>
@@ -30,6 +30,12 @@ var opensdg = {
   dataRounding: function(value) {
     // Alterations go here.
     return value;
+  },
+
+  // A hook which can be used to alter the data before it is displayed on charts/tables.
+  dataDisplayAlterations: [],
+  dataDisplayAlter: function(callback) {
+    this.dataDisplayAlterations.push(callback);
   },
 
   language: 'kk',
@@ -101,7 +107,7 @@ var translations = {
         
         Көрсеткіш 1.a.2 -
         
-        Мемлекеттік шығыстардың жалпы сомасындағы негізгі қызметтерге (білім беру, денсаулық сақтау және әлеуметтік қорғау) шығыстардың үлесі - Indicators For The Sustainable Development Goals
+        Мемлекеттік шығыстардың жалпы сомасындағы негізгі қызметтерге (білім беру, денсаулық сақтау және әлеуметтік қорғау) шығыстардың үлесі - Орнықты даму мақсаттарының көрсеткіштері
     </title>
 
 
@@ -132,7 +138,7 @@ var translations = {
         <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" crossorigin="">
         <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" crossorigin="">
         <link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/3.2.3/css/fixedColumns.dataTables.min.css" crossorigin="">
-        <link rel="stylesheet" href="/assets/css/style.css?v=20210209061900">
+        <link rel="stylesheet" href="/assets/css/style.css?v=20210222153635">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans|Roboto" rel="stylesheet" crossorigin="">
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css"
           integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
@@ -346,9 +352,9 @@ var translations = {
 
 <script type="text/template" id="units_template">
   <% if(units.length) { %>
-    <h4>Бірліктер түрі</h4>
+    <h4>Өлшем бірлігі</h4>
     <fieldset>
-      <legend class="sr-only">Бірліктер түрі</legend>
+      <legend class="sr-only">Өлшем бірлігі</legend>
       <% _.each(units, function(unitsItem, index) { %>
         <% var checked = (selectedUnit) ? (selectedUnit==unitsItem) : (index==0); %>
         <label><input type="radio" name="unit" value="<%=unitsItem%>" tabindex=0 <%=checked ? 'checked' : ''%> /> <%=translations.t(unitsItem)%></label>
@@ -385,6 +391,7 @@ var translations = {
 </ol>
 
 
+  
 </div>
 <div class="heading goal-banner indicator goal-1">
   <div class="container">
@@ -392,7 +399,7 @@ var translations = {
       
       <div class="col-xs-4 col-md-3 col-lg-2 goal-icon goal-tiles">
         <a href="/1" title="Осы мақсаттың көрсеткіштерінің тізімін көру">
-          <img src="https://open-sdg.github.io/sdg-translations/assets/img/goals/kk/1.png" alt="Кедейлікті жою - Мақсат 1" id="goal-1"/>
+          <img src="https://open-sdg.github.io/sdg-translations/assets/img/goals/kk/1.png" alt="Кедейлікті жою - Мақсат 1" id="goal-1" class="goal-icon-image goal-icon-image-"/>
         </a>
       </div>
       <div class="col-xs-8 col-md-9 col-lg-10 indicator-details">
@@ -445,6 +452,7 @@ var translations = {
   data-graphannotations="null"
   data-indicatordownloads="null"
   data-compositebreakdownlabel=""
+  data-precision="null"
 >
   
   <span role="status" class="sr-only" id="indicator-data-view-status"></span>
@@ -505,7 +513,7 @@ var translations = {
           
           
           
-          <td>12.8793912905</td>
+          <td>12.9</td>
           
           
           
@@ -525,7 +533,7 @@ var translations = {
           
           
           
-          <td>15.0320892239</td>
+          <td>15.0</td>
           
           
           
@@ -545,7 +553,7 @@ var translations = {
           
           
           
-          <td>10.6600449369</td>
+          <td>10.7</td>
           
           
           
@@ -565,7 +573,7 @@ var translations = {
           
           
           
-          <td>17.3884991496</td>
+          <td>17.4</td>
           
           
           
@@ -585,31 +593,11 @@ var translations = {
           
           
           
-          <td>4.6740867557</td>
+          <td>4.7</td>
           
           
           
-          <td>Культура, спорт, туризм и информационное пространство</td>
-          
-          
-          
-          <td class="table-value">пайыз</td>
-          
-          
-        </tr>
-        
-        <tr>
-          
-          
-          <td>2011</td>
-          
-          
-          
-          <td>10.9709421371</td>
-          
-          
-          
-          <td></td>
+          <td>_L_KZ_010a02_1A</td>
           
           
           
@@ -625,7 +613,27 @@ var translations = {
           
           
           
-          <td>16.2325684526</td>
+          <td>11.0</td>
+          
+          
+          
+          <td></td>
+          
+          
+          
+          <td class="table-value">пайыз</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>2011</td>
+          
+          
+          
+          <td>16.2</td>
           
           
           
@@ -645,7 +653,7 @@ var translations = {
           
           
           
-          <td>9.9758816947</td>
+          <td>10.0</td>
           
           
           
@@ -665,7 +673,7 @@ var translations = {
           
           
           
-          <td>18.0648471204</td>
+          <td>18.1</td>
           
           
           
@@ -685,31 +693,11 @@ var translations = {
           
           
           
-          <td>3.8300772837</td>
+          <td>3.8</td>
           
           
           
-          <td>Культура, спорт, туризм и информационное пространство</td>
-          
-          
-          
-          <td class="table-value">пайыз</td>
-          
-          
-        </tr>
-        
-        <tr>
-          
-          
-          <td>2012</td>
-          
-          
-          
-          <td>11.2717900817</td>
-          
-          
-          
-          <td></td>
+          <td>_L_KZ_010a02_1A</td>
           
           
           
@@ -725,7 +713,27 @@ var translations = {
           
           
           
-          <td>17.0788886854</td>
+          <td>11.3</td>
+          
+          
+          
+          <td></td>
+          
+          
+          
+          <td class="table-value">пайыз</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>2012</td>
+          
+          
+          
+          <td>17.1</td>
           
           
           
@@ -745,7 +753,7 @@ var translations = {
           
           
           
-          <td>10.3198787861</td>
+          <td>10.3</td>
           
           
           
@@ -765,7 +773,7 @@ var translations = {
           
           
           
-          <td>17.486809038</td>
+          <td>17.5</td>
           
           
           
@@ -785,31 +793,11 @@ var translations = {
           
           
           
-          <td>3.391556594</td>
+          <td>3.4</td>
           
           
           
-          <td>Культура, спорт, туризм и информационное пространство</td>
-          
-          
-          
-          <td class="table-value">пайыз</td>
-          
-          
-        </tr>
-        
-        <tr>
-          
-          
-          <td>2013</td>
-          
-          
-          
-          <td>10.4333005539</td>
-          
-          
-          
-          <td></td>
+          <td>_L_KZ_010a02_1A</td>
           
           
           
@@ -825,7 +813,27 @@ var translations = {
           
           
           
-          <td>16.5682064307</td>
+          <td>10.4</td>
+          
+          
+          
+          <td></td>
+          
+          
+          
+          <td class="table-value">пайыз</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>2013</td>
+          
+          
+          
+          <td>16.6</td>
           
           
           
@@ -845,7 +853,7 @@ var translations = {
           
           
           
-          <td>10.647535034</td>
+          <td>10.6</td>
           
           
           
@@ -865,7 +873,7 @@ var translations = {
           
           
           
-          <td>18.4813305139</td>
+          <td>18.5</td>
           
           
           
@@ -885,31 +893,11 @@ var translations = {
           
           
           
-          <td>3.4630421629</td>
+          <td>3.5</td>
           
           
           
-          <td>Культура, спорт, туризм и информационное пространство</td>
-          
-          
-          
-          <td class="table-value">пайыз</td>
-          
-          
-        </tr>
-        
-        <tr>
-          
-          
-          <td>2014</td>
-          
-          
-          
-          <td>10.1529585815</td>
-          
-          
-          
-          <td></td>
+          <td>_L_KZ_010a02_1A</td>
           
           
           
@@ -925,7 +913,27 @@ var translations = {
           
           
           
-          <td>15.4243649853</td>
+          <td>10.2</td>
+          
+          
+          
+          <td></td>
+          
+          
+          
+          <td class="table-value">пайыз</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>2014</td>
+          
+          
+          
+          <td>15.4</td>
           
           
           
@@ -945,7 +953,7 @@ var translations = {
           
           
           
-          <td>9.7482401326</td>
+          <td>9.7</td>
           
           
           
@@ -965,7 +973,7 @@ var translations = {
           
           
           
-          <td>17.7914998947</td>
+          <td>17.8</td>
           
           
           
@@ -985,11 +993,11 @@ var translations = {
           
           
           
-          <td>3.3762320525</td>
+          <td>3.4</td>
           
           
           
-          <td>Культура, спорт, туризм и информационное пространство</td>
+          <td>_L_KZ_010a02_1A</td>
           
           
           
@@ -1005,7 +1013,7 @@ var translations = {
           
           
           
-          <td>10.3866389267</td>
+          <td>10.4</td>
           
           
           
@@ -1025,7 +1033,7 @@ var translations = {
           
           
           
-          <td>15.2586265831</td>
+          <td>15.3</td>
           
           
           
@@ -1045,7 +1053,7 @@ var translations = {
           
           
           
-          <td>9.6569879254</td>
+          <td>9.7</td>
           
           
           
@@ -1065,7 +1073,7 @@ var translations = {
           
           
           
-          <td>19.2692509865</td>
+          <td>19.3</td>
           
           
           
@@ -1085,11 +1093,11 @@ var translations = {
           
           
           
-          <td>3.2839218769</td>
+          <td>3.3</td>
           
           
           
-          <td>Культура, спорт, туризм и информационное пространство</td>
+          <td>_L_KZ_010a02_1A</td>
           
           
           
@@ -1105,7 +1113,7 @@ var translations = {
           
           
           
-          <td>10.7474632901</td>
+          <td>10.7</td>
           
           
           
@@ -1125,7 +1133,7 @@ var translations = {
           
           
           
-          <td>15.9310425561</td>
+          <td>15.9</td>
           
           
           
@@ -1145,7 +1153,7 @@ var translations = {
           
           
           
-          <td>9.8959370993</td>
+          <td>9.9</td>
           
           
           
@@ -1165,7 +1173,7 @@ var translations = {
           
           
           
-          <td>19.1139385654</td>
+          <td>19.1</td>
           
           
           
@@ -1185,11 +1193,11 @@ var translations = {
           
           
           
-          <td>3.1091632413</td>
+          <td>3.1</td>
           
           
           
-          <td>Культура, спорт, туризм и информационное пространство</td>
+          <td>_L_KZ_010a02_1A</td>
           
           
           
@@ -1205,7 +1213,7 @@ var translations = {
           
           
           
-          <td>10.6973670544</td>
+          <td>10.7</td>
           
           
           
@@ -1225,7 +1233,7 @@ var translations = {
           
           
           
-          <td>13.6353106454</td>
+          <td>13.6</td>
           
           
           
@@ -1245,7 +1253,7 @@ var translations = {
           
           
           
-          <td>8.3430914413</td>
+          <td>8.3</td>
           
           
           
@@ -1265,7 +1273,7 @@ var translations = {
           
           
           
-          <td>17.0774805774</td>
+          <td>17.1</td>
           
           
           
@@ -1285,11 +1293,11 @@ var translations = {
           
           
           
-          <td>2.9469212607</td>
+          <td>2.9</td>
           
           
           
-          <td>Культура, спорт, туризм и информационное пространство</td>
+          <td>_L_KZ_010a02_1A</td>
           
           
           
@@ -1305,7 +1313,7 @@ var translations = {
           
           
           
-          <td>10.7600172736</td>
+          <td>10.8</td>
           
           
           
@@ -1325,7 +1333,7 @@ var translations = {
           
           
           
-          <td>15.8605023476</td>
+          <td>15.9</td>
           
           
           
@@ -1345,7 +1353,7 @@ var translations = {
           
           
           
-          <td>9.54961068</td>
+          <td>9.5</td>
           
           
           
@@ -1365,7 +1373,7 @@ var translations = {
           
           
           
-          <td>22.4152386222</td>
+          <td>22.4</td>
           
           
           
@@ -1385,11 +1393,11 @@ var translations = {
           
           
           
-          <td>3.6567907415</td>
+          <td>3.7</td>
           
           
           
-          <td>Культура, спорт, туризм и информационное пространство</td>
+          <td>_L_KZ_010a02_1A</td>
           
           
           
@@ -1405,7 +1413,7 @@ var translations = {
           
           
           
-          <td>11.155350942</td>
+          <td>11.2</td>
           
           
           
@@ -1425,7 +1433,7 @@ var translations = {
           
           
           
-          <td>15.5932236814</td>
+          <td>15.6</td>
           
           
           
@@ -1445,7 +1453,7 @@ var translations = {
           
           
           
-          <td>8.6375859277</td>
+          <td>8.6</td>
           
           
           
@@ -1465,7 +1473,7 @@ var translations = {
           
           
           
-          <td>23.1930449967</td>
+          <td>23.2</td>
           
           
           
@@ -1485,11 +1493,11 @@ var translations = {
           
           
           
-          <td>3.0504011577</td>
+          <td>3.1</td>
           
           
           
-          <td>Культура, спорт, туризм и информационное пространство</td>
+          <td>_L_KZ_010a02_1A</td>
           
           
           
@@ -1568,15 +1576,14 @@ data-event-label="Change to Table tab"
 <script>
 // Add a chart alteration to support the chart_graph_limits metadata field.
 opensdg.chartConfigAlter(function(config, info) {
-  if (info.graphLimits && info.graphLimits.length > 0) {
-    var limit = _.findWhere(info.graphLimits, { unit: info.selectedUnit }) || info.graphLimits[0];
+  if (info.graphLimits) {
     var overrides = {
       options: {
         scales: {
           yAxes: [{
             ticks: {
-              min: limit.minimum,
-              max: limit.maximum,
+              min: info.graphLimits.minimum,
+              max: info.graphLimits.maximum,
             }
           }]
         }
@@ -2051,8 +2058,8 @@ data-event-label="Change to Sources tab"
             
 
             
-              <a href="https://github.com/kazstat/sdg-data-kazstat/commit/f8efe41fd5d0103629872ca8e24ef353484a4adb" target="_blank">
-                2021-01-28: see changes on GitHub <span class="visuallyhidden">Жаңа қосымша бетте ашылады</span>
+              <a href="https://github.com/kazstat/sdg-data-kazstat/commit/f8c134e04af9fc5a433b472f0cbc03385d3e8dfc" target="_blank">
+                2021-02-10: see changes on GitHub <span class="visuallyhidden">Жаңа қосымша бетте ашылады</span>
               </a>
             
 
@@ -2857,12 +2864,12 @@ data-event-label="Change to Sources tab"
 <script>translations['search'] = translations['search'] || {};
     translations['search']['search'] = 'Іздеу';</script>
 
-<script src='/assets/js/sdg.js?v=20210209061900'></script>
+<script src='/assets/js/sdg.js?v=20210222153635'></script>
 
 
     
     
-    <script src="/assets/js/custom.js?v=20210209061900"></script><script>
+    <script src="/assets/js/custom.js?v=20210222153635"></script><script>
 $(function() {
     if($('#indicatorData').length) {
       var domData = $('#indicatorData').data();
@@ -2903,10 +2910,12 @@ $(function() {
               graphAnnotations: domData.graphannotations,
               indicatorDownloads: domData.indicatordownloads,
               compositeBreakdownLabel: domData.compositebreakdownlabel,
+              precision: domData.precision,
             }),
             view  = new indicatorView(model, {
               rootElement: '#indicatorData',
               legendElement: '#plotLegend',
+              decimalSeparator: '',
               maxChartHeight: 420,
               tableColumnDefs: [
                 { maxCharCount: 25 }, // nowrap

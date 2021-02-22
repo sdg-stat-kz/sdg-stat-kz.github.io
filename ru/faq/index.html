@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
-        <script crossorigin="anonymous" src="https://polyfill.io/v3/polyfill.min.js?features=Promise%2CArray.prototype.forEach%2CString.prototype.includes%2CURLSearchParams%2CCustomEvent%2CArray.prototype.includes%2CArray.prototype.filter%2CArray.prototype.some%2CArray.prototype.find%2CArray.prototype.reduce%2CObject.assign%2CArray.isArray%2CObject.values%2CArray.from%2CSet"></script>
+        <script crossorigin="anonymous" src="https://polyfill.io/v3/polyfill.min.js?features=Promise%2CArray.prototype.forEach%2CString.prototype.includes%2CURLSearchParams%2CCustomEvent%2CArray.prototype.includes%2CArray.prototype.filter%2CArray.prototype.some%2CArray.prototype.find%2CArray.prototype.reduce%2CObject.assign%2CArray.isArray%2CObject.values%2CArray.from%2CSet%2CArray.prototype.findIndex"></script>
 <script crossorigin="anonymous" src="https://cdnjs.cloudflare.com/ajax/libs/javascript-canvas-to-blob/3.15.0/js/canvas-to-blob.min.js"></script>
 
         <script>
@@ -30,6 +30,12 @@ var opensdg = {
   dataRounding: function(value) {
     // Alterations go here.
     return value;
+  },
+
+  // A hook which can be used to alter the data before it is displayed on charts/tables.
+  dataDisplayAlterations: [],
+  dataDisplayAlter: function(callback) {
+    this.dataDisplayAlterations.push(callback);
   },
 
   language: 'ru',
@@ -97,7 +103,7 @@ var translations = {
         ================================================== -->
 
         
-    <title>Frequently Asked Questions (FAQ) - Indicators For The Sustainable Development Goals</title>
+    <title> - Показатели Целей устойчивого развития</title>
 
 
 
@@ -127,7 +133,7 @@ var translations = {
         <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" crossorigin="">
         <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" crossorigin="">
         <link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/3.2.3/css/fixedColumns.dataTables.min.css" crossorigin="">
-        <link rel="stylesheet" href="/assets/css/style.css?v=20210209061900">
+        <link rel="stylesheet" href="/assets/css/style.css?v=20210222153635">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans|Roboto" rel="stylesheet" crossorigin="">
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css"
           integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
@@ -299,10 +305,36 @@ var translations = {
 
 <div id="main-content" class="container" role="main">
     <div>
-        <h1>Frequently Asked Questions (FAQ)</h1>
+        <h1></h1>
         
-            <p>Нужен перевод</p>
+            <p>Что означает статус отчетности?</p>
 
+<p>Мы использовали три различных типа состояния отчетности для индикатора, которые также имеют цветовую маркировку:
+• Черный: актуальный показатель, данные по этому показателю доступны на этом веб-сайте.
+• Белый: показатель является отложенным, методология расчета или исходные значения отсутствуют.
+• Черно-белый: показатель нерелевантен для Казахстана.</p>
+
+<p>Что означает дезагрегация?</p>
+
+<p>Дезагрегирование используется для более детальной оценки показателя путем его разделения на подкатегории. Наиболее распространенными из них являются возраст или пол. Каждый показатель имеет свой собственный конкретный набор категорий дезагрегирования, которые указываются либо в названии показателя, либо международной организацией, ответственной за этот показатель.</p>
+
+<p>Имеется ли методология расчета индикаторов ЦУР?</p>
+
+<p>Да, методология расчета глобальных индикаторов ЦУР размещена на сайте stat.gov.kz.</p>
+
+<p>Методология расчета национальных индикаторов в настоящее время разрабатывается.</p>
+
+<p>Какие результаты работы в сфере мониторинга ЦУР имеются на данный момент?</p>
+
+<p>Результаты работы отражены в Дорожной карте Казахстана по мониторингу достижения Целей устойчивого развития на 2020-2022 годы (размещена на сайте stat.gov.kz).</p>
+
+<p>Как часто новые данные будут добавляться на этот сайт?</p>
+
+<p>Данные будут добавляться по мере их производства в соответствии с Планом статистических работ и поступления от государственных органов.</p>
+
+<p>Что вы делаете, чтобы заполнить пробелы в данных?</p>
+
+<p>С целью формирования индикаторов ЦУР (в том числе по отсутствующим данным) Бюро национальной статистики сотрудничает с заинтересованными государственными органами и международными экспертами из различных агентств-кастодианов.</p>
 
         
     </div>
@@ -366,12 +398,12 @@ var translations = {
 <script>translations['search'] = translations['search'] || {};
     translations['search']['search'] = 'Поиск';</script>
 
-<script src='/assets/js/sdg.js?v=20210209061900'></script>
+<script src='/assets/js/sdg.js?v=20210222153635'></script>
 
 
     
     
-    <script src="/assets/js/custom.js?v=20210209061900"></script><script>
+    <script src="/assets/js/custom.js?v=20210222153635"></script><script>
 $(function() {
     if($('#indicatorData').length) {
       var domData = $('#indicatorData').data();
@@ -412,10 +444,12 @@ $(function() {
               graphAnnotations: domData.graphannotations,
               indicatorDownloads: domData.indicatordownloads,
               compositeBreakdownLabel: domData.compositebreakdownlabel,
+              precision: domData.precision,
             }),
             view  = new indicatorView(model, {
               rootElement: '#indicatorData',
               legendElement: '#plotLegend',
+              decimalSeparator: '',
               maxChartHeight: 420,
               tableColumnDefs: [
                 { maxCharCount: 25 }, // nowrap
